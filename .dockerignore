@@ -1,0 +1,10 @@
+.git
+.gitignore
+.env-local
+.vscode
+*.pyc
+*__pycache__
+static
+Dockerfile
+docker-compose.yml
+docker-compose.d

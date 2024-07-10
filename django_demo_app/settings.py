@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'SUPER_SECURE_SECRET_KEY'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'SUPER_SECURE_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '*').split(',')
 
 
 # Application definition
@@ -75,8 +76,12 @@ WSGI_APPLICATION = 'django_demo_app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': os.getenv('DJANGO_DATABASE_ENGINE', 'django.db.backends.mysql'),
+        'NAME': os.getenv('DJANGO_DATABASE_NAME', 'django_demo_app'),
+        'USER': os.getenv('DJANGO_DATABASE_USER', 'django_demo_app'),
+        'PASSWORD': os.getenv('DJANGO_DATABASE_PASSWORD', 'django_demo_app'),
+        'HOST': os.getenv('DJANGO_DATABASE_HOST', 'mariadb'),
+        'PORT': os.getenv('DJANGO_DATABASE_PORT', '3306'),
     }
 }
 
@@ -115,7 +120,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
+# Directory where static files will be collected
+STATIC_ROOT = BASE_DIR / 'static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

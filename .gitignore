@@ -1,2 +1,4 @@
-__pycache__
+static
 *.pyc
+*__pycache__
+.vscode

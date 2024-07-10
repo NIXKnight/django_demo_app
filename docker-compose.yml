@@ -1,0 +1,48 @@
+---
+# This docker-compose file is written for development purposes.
+# It is not recommended to use this file for production purposes without any necessary changes.
+services:
+  # Init container
+  django_demo_app_init:
+    build: .
+    container_name: "django_demo_app_init"
+    command: "sh -c 'python manage.py collectstatic --noinput --clear && python manage.py migrate --noinput'"
+    volumes:
+      - "./:/opt/django_demo_app"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+  # django_demo_app container
+  django_demo_app_web:
+    build: .
+    container_name: "django_demo_app_web"
+    command: "sh -c 'exec gunicorn --workers=2 --bind=0.0.0.0:8001 --reload django_demo_app.wsgi:application'"
+    ports:
+      - "127.0.0.1:8001:8001"
+    volumes:
+      - "./:/opt/django_demo_app"
+    depends_on:
+      django_demo_app_init:
+        condition: service_completed_successfully
+      mariadb:
+        condition: service_healthy
+
+  # MariaDB container
+  mariadb:
+    container_name: "mariadb"
+    image: "mariadb:10.11.4-jammy"
+    environment:
+      MYSQL_ROOT_PASSWORD: "password"
+    volumes:
+      - "mariadb:/var/lib/mysql"
+      - "./docker-compose.d/development/mariadb-init:/docker-entrypoint-initdb.d"
+    ports:
+      - "127.0.0.1:3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-ppassword"]
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mariadb:
