@@ -32,6 +32,7 @@ ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '*').split(',')
 # Application definition
 
 INSTALLED_APPS = [
+    'leaky',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
