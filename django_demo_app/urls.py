@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('leaky.urls')),
     re_path(r'^ht/', include('health_check.urls')),
+    path('hostinfo/', include('hostinfo.urls')),
 ]
